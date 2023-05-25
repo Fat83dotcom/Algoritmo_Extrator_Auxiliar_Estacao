@@ -1,14 +1,14 @@
-import csv
-from itertools import groupby
-from pathlib import Path
 import os
-from sys import getsizeof
+import csv
 import psycopg2
 from abc import ABC
+from pathlib import Path
+from sys import getsizeof
+from itertools import groupby
 from databaseSettings import CONFIG
 
 
-class BancoDeDados(ABC):
+class DataBase(ABC):
     def __init__(
             self, host='', port='', dbname='', user='', password=''
             ) -> None:
@@ -16,35 +16,35 @@ class BancoDeDados(ABC):
             host=host, port=port, dbname=dbname, user=user, password=password)
         self.cursor = self.con.cursor()
 
-    def fecharConexao(self):
+    def closeConnection(self):
         self.con.close()
 
-    def executar(self, sql):
+    def toExecute(self, sql):
         self.cursor.execute(sql)
 
-    def enviar(self):
+    def toSend(self):
         self.con.commit()
 
-    def abortar(self):
+    def toAbort(self):
         self.con.rollback()
 
-    def buscarDados(self):
+    def seekData(self):
         return self.cursor.fetchall()
 
-    def buscarUmDado(self):
+    def seekOneData(self):
         return self.cursor.fetchone()
 
-    def buscarIntervalo(self, intervalo):
+    def seekInterval(self, intervalo):
         return self.cursor.fetchmany(intervalo)
 
-    def geradorSQLInsert(self, *args, nome_colunas=None,  nome_tabela=None):
+    def generatorSQLInsert(self, *args, nome_colunas=None,  nome_tabela=None):
         valores = args[0]
         sql = "INSERT INTO %s %s VALUES %s" % (
             nome_tabela, nome_colunas, valores
         )
         return sql
 
-    def geradorSQLUpdate(
+    def generatorSQLUpdate(
             self, *args, nome_colunas=None, nome_tabela=None, condicao=None
             ):
         valores = args[0]
@@ -54,11 +54,11 @@ class BancoDeDados(ABC):
         return sql
 
 
-class OperacoesTabelasBD(BancoDeDados):
+class OperationDataBase(DataBase):
 
     def __init__(self, tabela) -> None:
         self.tablela = tabela
-        self.Bd = BancoDeDados(
+        self.Bd = DataBase(
             dbname=CONFIG['banco_dados'],
             user=CONFIG['usuario'],
             port=CONFIG['porta'],
@@ -67,29 +67,29 @@ class OperacoesTabelasBD(BancoDeDados):
         )
 
     def atualizarColuna(self, coluna, condicao, atualizacao):
-        sql = self.geradorSQLUpdate(
+        sql = self.generatorSQLUpdate(
             atualizacao, nome_tabela=self.tablela,
             nome_colunas=coluna, condicao=condicao)
         try:
-            self.Bd.executar(sql)
-            self.Bd.enviar()
+            self.Bd.toExecute(sql)
+            self.Bd.toSend()
         except Exception as e:
-            self.Bd.abortar()
+            self.Bd.toAbort()
             raise e
 
     def inserirColunas(self, *args, coluna):
         try:
-            sql = self.geradorSQLInsert(
+            sql = self.generatorSQLInsert(
                 *args, nome_colunas=coluna, nome_tabela=self.tablela
             )
-            self.Bd.executar(sql)
-            self.Bd.enviar()
+            self.Bd.toExecute(sql)
+            self.Bd.toSend()
         except Exception as e:
-            self.Bd.abortar()
+            self.Bd.toAbort()
             raise e
 
-    def fecharConexao(self):
-        return self.Bd.fecharConexao()
+    def closeConnection(self):
+        return self.Bd.closeConnection()
 
 
 class FileRetriever:
