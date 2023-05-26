@@ -3,7 +3,7 @@ import csv
 import psycopg2
 from abc import ABC
 from pathlib import Path
-from sys import getsizeof
+from statistics import mean, median, mode
 from itertools import groupby
 from databaseSettings import CONFIG
 
@@ -144,28 +144,85 @@ class DataExtractor:
 
 class DataProcessor:
     def __init__(self) -> None:
-        self.__meanData: list = []
+        self.__dataProcessed: list = []
 
     def processedData(self, listTarget) -> None:
         for groupData in listTarget:
-            currentDataList: list = []
-            summ: list = [0, 0, 0, 0]
-            for data in groupData[1]:
-                summ[0] += data[0]
-                summ[1] += data[1]
-                summ[2] += data[2]
-                summ[3] += data[3]
+            currentData: dict = {
+                'date': '',
+                'umidity': {
+                    'minimum': float,
+                    'maximum': float,
+                    'mean': float,
+                    'median': float,
+                    'mode': float
+                },
+                'press': {
+                    'minimum': float,
+                    'maximum': float,
+                    'mean': float,
+                    'median': float,
+                    'mode': float
+                },
+                'tempIndoor': {
+                    'minimum': float,
+                    'maximum': float,
+                    'mean': float,
+                    'median': float,
+                    'mode': float
+                },
+                'tempOutdoor': {
+                    'minimum': float,
+                    'maximum': float,
+                    'mean': float,
+                    'median': float,
+                    'mode': float
+                }
+            }
+            humidity: list = []
+            press: list = []
+            tempIndoor: list = []
+            tempOutdoor: list = []
 
-            sizeGroupData = len(groupData[1])
-            currentDataList.append(groupData[0])
-            currentDataList.append(round((summ[0] / sizeGroupData), 2))
-            currentDataList.append(round((summ[1] / sizeGroupData), 2))
-            currentDataList.append(round((summ[2] / sizeGroupData), 2))
-            currentDataList.append(round((summ[3] / sizeGroupData), 2))
-            self.__meanData.append(currentDataList)
+            for data in groupData[1]:
+                humidity.append(data[0])
+                press.append(data[1])
+                tempIndoor.append(data[2])
+                tempOutdoor.append(data[3])
+
+            currentData.update({'date': groupData[0]})
+            currentData.update({'umidity': {
+                    'minimum': min(humidity),
+                    'maximum': max(humidity),
+                    'mean': round(mean(humidity), 2),
+                    'median': median(humidity),
+                    'mode': mode(humidity)
+                }})
+            currentData.update({'press': {
+                    'minimum': min(press),
+                    'maximum': max(press),
+                    'mean': round(mean(press), 2),
+                    'median': median(press),
+                    'mode': mode(press)
+                }})
+            currentData.update({'tempIndoor': {
+                    'minimum': min(tempIndoor),
+                    'maximum': max(tempIndoor),
+                    'mean': round(mean(tempIndoor), 2),
+                    'median': median(tempIndoor),
+                    'mode': mode(tempIndoor)
+                }})
+            currentData.update({'tempOutdoor': {
+                    'minimum': min(tempOutdoor),
+                    'maximum': max(tempOutdoor),
+                    'mean': round(mean(tempOutdoor), 2),
+                    'median': median(tempOutdoor),
+                    'mode': mode(tempOutdoor)
+                }})
+            self.__dataProcessed.append(currentData)
 
     def getMeanData(self) -> list:
-        return self.__meanData
+        return self.__dataProcessed
 
 
 if __name__ == '__main__':
@@ -174,7 +231,6 @@ if __name__ == '__main__':
     dE = DataExtractor()
     dE.dataExtract(files)
     resultData = dE.getExtractData()
-    print(getsizeof(resultData))
     dP = DataProcessor()
     dP.processedData(resultData)
     result = dP.getMeanData()
