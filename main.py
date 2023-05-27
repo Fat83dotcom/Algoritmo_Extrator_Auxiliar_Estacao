@@ -243,6 +243,8 @@ class DataProcessor:
 
 
 if __name__ == '__main__':
+    bDMonthYear = OperationDataBase('mes_ano')
+    bDDataDaily = OperationDataBase('dado_diario')
     r = FileRetriever('.')
     files = r.getFoundFiles()
     dE = DataExtractor()
