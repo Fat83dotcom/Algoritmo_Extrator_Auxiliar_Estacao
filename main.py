@@ -6,7 +6,6 @@ from pathlib import Path
 from statistics import mean, median, mode
 from itertools import groupby
 from databaseSettings import CONFIG
-from datetime import datetime
 
 
 class DataBase(ABC):
@@ -163,16 +162,12 @@ class DataProcessor:
             'dez': 12
         }
 
-    def __dateTransformer(self, dateOld: str) -> datetime:
-        print(dateOld)
+    def __dateTransformer(self, dateOld: str) -> str:
         newDate: str = ''
         for k, v in self.__numbersOfMonth.items():
             if k == dateOld[3:6]:
                 newDate = dateOld.replace(k, str(v))
-        print(newDate)
-        newDate = datetime(
-            int(newDate[5:]), int(newDate[3]), int(newDate[:2])
-            )
+        newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
         return newDate
 
     def processedData(self, listTarget) -> None:
