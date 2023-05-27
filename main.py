@@ -163,6 +163,18 @@ class DataProcessor:
             'dez': 12
         }
 
+    def __dateTransformer(self, dateOld: str) -> datetime:
+        print(dateOld)
+        newDate: str = ''
+        for k, v in self.__numbersOfMonth.items():
+            if k == dateOld[3:6]:
+                newDate = dateOld.replace(k, str(v))
+        print(newDate)
+        newDate = datetime(
+            int(newDate[5:]), int(newDate[3]), int(newDate[:2])
+            )
+        return newDate
+
     def processedData(self, listTarget) -> None:
         for groupData in listTarget:
             currentData: dict = {
@@ -207,7 +219,7 @@ class DataProcessor:
                 tempIndoor.append(data[2])
                 tempOutdoor.append(data[3])
 
-            currentData.update({'date': groupData[0]})
+            currentData.update({'date': self.__dateTransformer(groupData[0])})
             currentData.update({'umidity': {
                     'minimum': min(humidity),
                     'maximum': max(humidity),
