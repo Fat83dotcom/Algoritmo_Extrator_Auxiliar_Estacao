@@ -233,32 +233,32 @@ class DataProcessor:
 
             currentData.update({'date': self.__dateTransformer(groupData[0])})
             currentData.update({'umidity': {
-                    'minimum': min(humidity),
-                    'maximum': max(humidity),
+                    'minimum': round(min(humidity), 2),
+                    'maximum': round(max(humidity), 2),
                     'mean': round(mean(humidity), 2),
-                    'median': median(humidity),
-                    'mode': mode(humidity)
+                    'median': round(median(humidity), 2),
+                    'mode': round(mode(humidity), 2)
                 }})
             currentData.update({'press': {
-                    'minimum': min(press),
-                    'maximum': max(press),
+                    'minimum': round(min(press), 2),
+                    'maximum': round(max(press), 2),
                     'mean': round(mean(press), 2),
-                    'median': median(press),
-                    'mode': mode(press)
+                    'median': round(median(press), 2),
+                    'mode': round(mode(press), 2)
                 }})
             currentData.update({'tempIndoor': {
-                    'minimum': min(tempIndoor),
-                    'maximum': max(tempIndoor),
+                    'minimum': round(min(tempIndoor), 2),
+                    'maximum': round(max(tempIndoor), 2),
                     'mean': round(mean(tempIndoor), 2),
-                    'median': median(tempIndoor),
-                    'mode': mode(tempIndoor)
+                    'median': round(median(tempIndoor), 2),
+                    'mode': round(mode(tempIndoor), 2)
                 }})
             currentData.update({'tempOutdoor': {
-                    'minimum': min(tempOutdoor),
-                    'maximum': max(tempOutdoor),
+                    'minimum': round(min(tempOutdoor), 2),
+                    'maximum': round(max(tempOutdoor), 2),
                     'mean': round(mean(tempOutdoor), 2),
-                    'median': median(tempOutdoor),
-                    'mode': mode(tempOutdoor)
+                    'median': round(median(tempOutdoor), 2),
+                    'mode': round(mode(tempOutdoor), 2)
                 }})
             self.__dataProcessed.append(currentData)
 
