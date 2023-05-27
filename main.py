@@ -6,6 +6,7 @@ from pathlib import Path
 from statistics import mean, median, mode
 from itertools import groupby
 from databaseSettings import CONFIG
+from datetime import datetime
 
 
 class DataBase(ABC):
