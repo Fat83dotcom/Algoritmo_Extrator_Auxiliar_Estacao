@@ -121,24 +121,23 @@ class DataExtractor:
     def __init__(self) -> None:
         self.__extractData: list = []
 
-    def dataExtract(self, files: list) -> None:
+    def dataExtract(self, file: list) -> None:
         def __extractKey(listTarget):
             return listTarget[0][:11]
 
-        for fileName in files:
-            PATH_CSV = Path(__file__).parent / fileName
-            with open(PATH_CSV, 'r', encoding='utf-8') as myCsv:
-                reader = csv.reader((line.replace('\0', '') for line in myCsv))
-                groups = groupby(reader, key=__extractKey)
-                for date, data in groups:
-                    self.__extractData.append((date, [
-                        (
-                            float(values[1]),
-                            float(values[2]),
-                            float(values[3]),
-                            float(values[4])
-                        ) for values in data
-                    ]))
+        PATH_CSV = Path(__file__).parent / file
+        with open(PATH_CSV, 'r', encoding='utf-8') as myCsv:
+            reader = csv.reader((line.replace('\0', '') for line in myCsv))
+            groups = groupby(reader, key=__extractKey)
+            for date, data in groups:
+                self.__extractData.append((date, [
+                    (
+                        float(values[1]),
+                        float(values[2]),
+                        float(values[3]),
+                        float(values[4])
+                    ) for values in data
+                ]))
 
     def getExtractData(self) -> list:
         return self.__extractData
@@ -271,58 +270,60 @@ class DataProcessor:
 
 if __name__ == '__main__':
     bDDataDaily = OperationDataBase('dado_diario')
-    r = FileRetriever('.')
+    r = FileRetriever('/home/fernando/csv_estacao')
     dE = DataExtractor()
     dP = DataProcessor()
     files = r.getFoundFiles()
-    dE.dataExtract(files)
-    extractData = dE.getExtractData()
-    dP.processedData(extractData)
-    dataProcessed = dP.getDataProcessed()
+    for currentFile in files:
+        dE.dataExtract(currentFile)
+        extractData = dE.getExtractData()
+        dP.processedData(extractData)
+        dataProcessed = dP.getDataProcessed()
 
-    for dataDays in dataProcessed:
-        bDDataDaily.insertCollumn(
-            (dataDays['date'],
-                dataDays['umidity']['minimum'],
-                dataDays['umidity']['maximum'],
-                dataDays['umidity']['mean'],
-                dataDays['umidity']['median'],
-                dataDays['umidity']['mode'],
-                dataDays['press']['minimum'],
-                dataDays['press']['maximum'],
-                dataDays['press']['mean'],
-                dataDays['press']['median'],
-                dataDays['press']['mode'],
-                dataDays['tempIndoor']['minimum'],
-                dataDays['tempIndoor']['maximum'],
-                dataDays['tempIndoor']['mean'],
-                dataDays['tempIndoor']['median'],
-                dataDays['tempIndoor']['mode'],
-                dataDays['tempOutdoor']['minimum'],
-                dataDays['tempOutdoor']['maximum'],
-                dataDays['tempOutdoor']['mean'],
-                dataDays['tempOutdoor']['median'],
-                dataDays['tempOutdoor']['mode']), collumn='(dia, \
-                media_umidade, \
-                minimo_umidade, \
-                maximo_umidade, \
-                mediana_umidade, \
-                moda_umidade, \
-                media_pressao, \
-                minimo_pressao, \
-                maximo_pressao, \
-                mediana_pressao, \
-                moda_pressao, \
-                media_temp_int, \
-                minimo_temp_int, \
-                maximo_temp_int, \
-                mediana_temp_int, \
-                moda_temp_int, \
-                media_temp_ext, \
-                minimo_temp_ext, \
-                maximo_temp_ext, \
-                mediana_temp_ext, \
-                moda_temp_ext\
-            )')
+        for dataDays in dataProcessed:
+            bDDataDaily.insertCollumn(
+                (dataDays['date'],
+                    dataDays['umidity']['minimum'],
+                    dataDays['umidity']['maximum'],
+                    dataDays['umidity']['mean'],
+                    dataDays['umidity']['median'],
+                    dataDays['umidity']['mode'],
+                    dataDays['press']['minimum'],
+                    dataDays['press']['maximum'],
+                    dataDays['press']['mean'],
+                    dataDays['press']['median'],
+                    dataDays['press']['mode'],
+                    dataDays['tempIndoor']['minimum'],
+                    dataDays['tempIndoor']['maximum'],
+                    dataDays['tempIndoor']['mean'],
+                    dataDays['tempIndoor']['median'],
+                    dataDays['tempIndoor']['mode'],
+                    dataDays['tempOutdoor']['minimum'],
+                    dataDays['tempOutdoor']['maximum'],
+                    dataDays['tempOutdoor']['mean'],
+                    dataDays['tempOutdoor']['median'],
+                    dataDays['tempOutdoor']['mode']), collumn='(dia, \
+                    media_umidade, \
+                    minimo_umidade, \
+                    maximo_umidade, \
+                    mediana_umidade, \
+                    moda_umidade, \
+                    media_pressao, \
+                    minimo_pressao, \
+                    maximo_pressao, \
+                    mediana_pressao, \
+                    moda_pressao, \
+                    media_temp_int, \
+                    minimo_temp_int, \
+                    maximo_temp_int, \
+                    mediana_temp_int, \
+                    moda_temp_int, \
+                    media_temp_ext, \
+                    minimo_temp_ext, \
+                    maximo_temp_ext, \
+                    mediana_temp_ext, \
+                    moda_temp_ext\
+                )')
+        print(f'{currentFile} foi salvo no banco de dados.')
 
     bDDataDaily.closeConnection()
