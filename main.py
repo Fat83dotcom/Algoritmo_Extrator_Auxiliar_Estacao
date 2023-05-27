@@ -161,13 +161,33 @@ class DataProcessor:
             'nov': 11,
             'dez': 12
         }
+        self.__numbersOfMonthEnglish = {
+            'Jan': 1,
+            'Feb': 2,
+            'Mar': 3,
+            'Apr': 4,
+            'May': 5,
+            'Jun': 6,
+            'Jul': 7,
+            'Aug': 8,
+            'Sep': 9,
+            'Oct': 10,
+            'Nov': 11,
+            'Dec': 12
+        }
 
     def __dateTransformer(self, dateOld: str) -> str:
         newDate: str = ''
-        for k, v in self.__numbersOfMonth.items():
-            if k == dateOld[3:6]:
-                newDate = dateOld.replace(k, str(v))
-        newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
+        if dateOld[3:6][0].islower():
+            for k, v in self.__numbersOfMonth.items():
+                if k == dateOld[3:6]:
+                    newDate = dateOld.replace(k, str(v))
+            newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
+        else:
+            for k, v in self.__numbersOfMonthEnglish.items():
+                if k == dateOld[3:6]:
+                    newDate = dateOld.replace(k, str(v))
+            newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
         return newDate
 
     def processedData(self, listTarget) -> None:
