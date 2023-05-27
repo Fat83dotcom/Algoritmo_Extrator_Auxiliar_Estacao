@@ -38,10 +38,12 @@ class DataBase(ABC):
     def seekInterval(self, intervalo):
         return self.cursor.fetchmany(intervalo)
 
-    def generatorSQLInsert(self, *args, nome_colunas=None,  nome_tabela=None):
-        valores = args[0]
+    def generatorSQLInsert(self, *args, colunm_names=None,  table_name=None):
+        values = args[0]
+        if len(values) == 1:
+            values = str(values).replace(',', '')
         sql = "INSERT INTO %s %s VALUES %s" % (
-            nome_tabela, nome_colunas, valores
+            table_name, colunm_names, values
         )
         return sql
 
