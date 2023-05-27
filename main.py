@@ -59,8 +59,8 @@ class DataBase(ABC):
 
 class OperationDataBase(DataBase):
 
-    def __init__(self, tabela) -> None:
-        self.tablela = tabela
+    def __init__(self, table: str) -> None:
+        self.__table = table
         self.Bd = DataBase(
             dbname=CONFIG['banco_dados'],
             user=CONFIG['usuario'],
@@ -71,7 +71,7 @@ class OperationDataBase(DataBase):
 
     def atualizarColuna(self, coluna, condicao, atualizacao):
         sql = self.generatorSQLUpdate(
-            atualizacao, nome_tabela=self.tablela,
+            atualizacao, nome_tabela=self.__table,
             nome_colunas=coluna, condicao=condicao)
         try:
             self.Bd.toExecute(sql)
@@ -83,7 +83,7 @@ class OperationDataBase(DataBase):
     def inserirColunas(self, *args, coluna):
         try:
             sql = self.generatorSQLInsert(
-                *args, nome_colunas=coluna, nome_tabela=self.tablela
+                *args, colunm_names=coluna, table_name=self.__table
             )
             self.Bd.toExecute(sql)
             self.Bd.toSend()
