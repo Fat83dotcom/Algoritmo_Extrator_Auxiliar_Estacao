@@ -122,22 +122,30 @@ class DataExtractor:
         self.__extractData: list = []
 
     def dataExtract(self, file: list) -> None:
-        def __extractKey(listTarget):
-            return listTarget[0][:11]
+        try:
+            def __extractKey(listTarget):
+                # print(listTarget[0][:11])
+                return listTarget[0][:11]
 
-        PATH_CSV = Path(__file__).parent / file
-        with open(PATH_CSV, 'r', encoding='utf-8') as myCsv:
-            reader = csv.reader((line.replace('\0', '') for line in myCsv))
-            groups = groupby(reader, key=__extractKey)
-            for date, data in groups:
-                self.__extractData.append((date, [
-                    (
-                        float(values[1]),
-                        float(values[2]),
-                        float(values[3]),
-                        float(values[4])
-                    ) for values in data
-                ]))
+            PATH_CSV = Path(__file__).parent / file
+            with open(PATH_CSV, 'r', encoding='utf-8') as myCsv:
+                reader = csv.reader((line.replace('\0', '') for line in myCsv))
+                groups = groupby(reader, key=__extractKey)
+                for date, data in groups:
+                    self.__extractData.append((date, [
+                        (
+                            float(values[1]),
+                            float(values[2]),
+                            float(values[3]),
+                            float(values[4])
+                        )
+                        if
+                        values[1] and values[2] and values[3] and values[4] != ''
+                        else (0, 0, 0, 0)
+                        for values in data
+                    ]))
+        except (IndexError, Exception) as e:
+            raise e
 
     def getExtractData(self) -> list:
         return self.__extractData
