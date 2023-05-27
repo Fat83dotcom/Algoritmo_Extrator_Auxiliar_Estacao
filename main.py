@@ -261,16 +261,48 @@ if __name__ == '__main__':
     result = dP.getMeanData()
 
     for dataDays in result:
-        for k, v in dataDays.items():
-            print(k, v)
-            if k == 'date':
-                print(v[7:], v[3:6], v[:3])
-                # date = datetime(v[7:], v[3:6], v[:3])
-                # print(date)
+        bDDataDaily.inserirColunas(
+            (dataDays['date'],
+                dataDays['umidity']['minimum'],
+                dataDays['umidity']['maximum'],
+                dataDays['umidity']['mean'],
+                dataDays['umidity']['median'],
+                dataDays['umidity']['mode'],
+                dataDays['press']['minimum'],
+                dataDays['press']['maximum'],
+                dataDays['press']['mean'],
+                dataDays['press']['median'],
+                dataDays['press']['mode'],
+                dataDays['tempIndoor']['minimum'],
+                dataDays['tempIndoor']['maximum'],
+                dataDays['tempIndoor']['mean'],
+                dataDays['tempIndoor']['median'],
+                dataDays['tempIndoor']['mode'],
+                dataDays['tempOutdoor']['minimum'],
+                dataDays['tempOutdoor']['maximum'],
+                dataDays['tempOutdoor']['mean'],
+                dataDays['tempOutdoor']['median'],
+                dataDays['tempOutdoor']['mode']), coluna='(dia, \
+                media_umidade, \
+                minimo_umidade, \
+                maximo_umidade, \
+                mediana_umidade, \
+                moda_umidade, \
+                media_pressao, \
+                minimo_pressao, \
+                maximo_pressao, \
+                mediana_pressao, \
+                moda_pressao, \
+                media_temp_int, \
+                minimo_temp_int, \
+                maximo_temp_int, \
+                mediana_temp_int, \
+                moda_temp_int, \
+                media_temp_ext, \
+                minimo_temp_ext, \
+                maximo_temp_ext, \
+                mediana_temp_ext, \
+                moda_temp_ext\
+            )')
 
-    # for i in files:
-    #     print(i[:8])
-    #     bDMonthYear.inserirColunas((i[:8],), coluna='(mes_ano)')
-
-    bDMonthYear.closeConnection()
     bDDataDaily.closeConnection()
