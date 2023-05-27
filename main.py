@@ -279,7 +279,6 @@ if __name__ == '__main__':
         bDDataDaily = OperationDataBase('dado_diario')
         r = FileRetriever('/home/fernando/csv_estacao')
         files = r.getFoundFiles()
-        print(files)
         for currentFile in files:
             dE = DataExtractor()
             dP = DataProcessor()
@@ -336,6 +335,6 @@ if __name__ == '__main__':
             del dE, dP
             print(f'{currentFile} foi salvo no banco de dados.')
     except Exception as e:
-        print(e)
+        print(e.__class__.__name__, e)
 
     bDDataDaily.closeConnection()
