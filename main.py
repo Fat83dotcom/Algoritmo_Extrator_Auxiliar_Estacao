@@ -100,10 +100,10 @@ class FileRetriever:
         self.__path = path
 
     def __fileHunter(self) -> None:
-        for _, _, file_ in os.walk(self.__path):
+        for root, _, file_ in os.walk(self.__path):
             for targetFile in file_:
                 if '.csv' in targetFile:
-                    self.__foundFiles.append(targetFile)
+                    self.__foundFiles.append(os.path.join(root, targetFile))
 
     def getFoundFiles(self) -> list:
         try:
