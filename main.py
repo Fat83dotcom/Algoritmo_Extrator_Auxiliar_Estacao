@@ -47,11 +47,11 @@ class DataBase(ABC):
         return sql
 
     def generatorSQLUpdate(
-            self, *args, nome_colunas=None, nome_tabela=None, condicao=None
+            self, *args, collumn_name=None, table_name=None, condiction=None
             ):
         valores = args[0]
         sql = "UPDATE %s SET %s='%s' WHERE %s" % (
-            nome_tabela, nome_colunas, valores, condicao
+            table_name, collumn_name, valores, condiction
         )
         return sql
 
@@ -68,10 +68,10 @@ class OperationDataBase(DataBase):
             host=CONFIG['host']
         )
 
-    def atualizarColuna(self, coluna, condicao, atualizacao):
+    def updateColumn(self, collumn, condiction, update):
         sql = self.generatorSQLUpdate(
-            atualizacao, nome_tabela=self.__table,
-            nome_colunas=coluna, condicao=condicao)
+            update, table_name=self.__table,
+            collumn_name=collumn, condiction=condiction)
         try:
             self.Bd.toExecute(sql)
             self.Bd.toSend()
@@ -79,10 +79,10 @@ class OperationDataBase(DataBase):
             self.Bd.toAbort()
             raise e
 
-    def inserirColunas(self, *args, coluna):
+    def insertCollumn(self, *args, collumn):
         try:
             sql = self.generatorSQLInsert(
-                *args, colunm_names=coluna, table_name=self.__table
+                *args, colunm_names=collumn, table_name=self.__table
             )
             self.Bd.toExecute(sql)
             self.Bd.toSend()
@@ -245,23 +245,23 @@ class DataProcessor:
                 }})
             self.__dataProcessed.append(currentData)
 
-    def getMeanData(self) -> list:
+    def getDataProcessed(self) -> list:
         return self.__dataProcessed
 
 
 if __name__ == '__main__':
     bDDataDaily = OperationDataBase('dado_diario')
     r = FileRetriever('.')
-    files = r.getFoundFiles()
     dE = DataExtractor()
-    dE.dataExtract(files)
-    resultData = dE.getExtractData()
     dP = DataProcessor()
-    dP.processedData(resultData)
-    result = dP.getMeanData()
+    files = r.getFoundFiles()
+    dE.dataExtract(files)
+    extractData = dE.getExtractData()
+    dP.processedData(extractData)
+    dataProcessed = dP.getDataProcessed()
 
-    for dataDays in result:
-        bDDataDaily.inserirColunas(
+    for dataDays in dataProcessed:
+        bDDataDaily.insertCollumn(
             (dataDays['date'],
                 dataDays['umidity']['minimum'],
                 dataDays['umidity']['maximum'],
@@ -282,7 +282,7 @@ if __name__ == '__main__':
                 dataDays['tempOutdoor']['maximum'],
                 dataDays['tempOutdoor']['mean'],
                 dataDays['tempOutdoor']['median'],
-                dataDays['tempOutdoor']['mode']), coluna='(dia, \
+                dataDays['tempOutdoor']['mode']), collumn='(dia, \
                 media_umidade, \
                 minimo_umidade, \
                 maximo_umidade, \
