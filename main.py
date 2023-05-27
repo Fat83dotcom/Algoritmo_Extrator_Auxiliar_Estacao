@@ -254,4 +254,17 @@ if __name__ == '__main__':
     dP.processedData(resultData)
     result = dP.getMeanData()
 
-    print(result)
+    for dataDays in result:
+        for k, v in dataDays.items():
+            print(k, v)
+            if k == 'date':
+                print(v[7:], v[3:6], v[:3])
+                # date = datetime(v[7:], v[3:6], v[:3])
+                # print(date)
+
+    # for i in files:
+    #     print(i[:8])
+    #     bDMonthYear.inserirColunas((i[:8],), coluna='(mes_ano)')
+
+    bDMonthYear.closeConnection()
+    bDDataDaily.closeConnection()
