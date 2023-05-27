@@ -148,6 +148,20 @@ class DataExtractor:
 class DataProcessor:
     def __init__(self) -> None:
         self.__dataProcessed: list = []
+        self.__numbersOfMonth = {
+            'jan': 1,
+            'fev': 2,
+            'mar': 3,
+            'abr': 4,
+            'mai': 5,
+            'jun': 6,
+            'jul': 7,
+            'ago': 8,
+            'set': 9,
+            'out': 10,
+            'nov': 11,
+            'dez': 12
+        }
 
     def processedData(self, listTarget) -> None:
         for groupData in listTarget:
