@@ -181,13 +181,11 @@ class DataProcessor:
             for k, v in self.__numbersOfMonth.items():
                 if k == dateOld[3:6]:
                     newDate = dateOld.replace(k, str(v))
-            newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
         else:
             for k, v in self.__numbersOfMonthEnglish.items():
                 if k == dateOld[3:6]:
                     newDate = dateOld.replace(k, str(v))
-            newDate = f'{newDate[5:]}-{(newDate[3])}-{(newDate[:2])}'
-        return newDate
+        return newDate.strip(' ')
 
     def processedData(self, listTarget) -> None:
         for groupData in listTarget:
