@@ -150,7 +150,6 @@ class DataExtractor:
     def dataExtract(self, file: list) -> None:
         try:
             def __extractKey(listTarget):
-                # print(listTarget[0][:11])
                 return listTarget[0][:11]
 
             PATH_CSV = Path(__file__).parent / file
