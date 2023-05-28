@@ -6,6 +6,7 @@ from pathlib import Path
 from statistics import mean, median, mode
 from itertools import groupby
 from databaseSettings import CONFIG
+from datetime import datetime
 
 
 class DataBase(ABC):
@@ -177,31 +178,44 @@ class DataProcessor:
             'dez': 12
         }
         self.__numbersOfMonthEnglish = {
-            'Jan': 1,
-            'Feb': 2,
-            'Mar': 3,
-            'Apr': 4,
-            'May': 5,
-            'Jun': 6,
-            'Jul': 7,
-            'Aug': 8,
-            'Sep': 9,
-            'Oct': 10,
-            'Nov': 11,
-            'Dec': 12
+            'jan': 1,
+            'feb': 2,
+            'mar': 3,
+            'apr': 4,
+            'may': 5,
+            'jun': 6,
+            'jul': 7,
+            'aug': 8,
+            'sep': 9,
+            'oct': 10,
+            'nov': 11,
+            'dec': 12
         }
 
     def __dateTransformer(self, dateOld: str) -> str:
-        newDate: str = ''
-        if dateOld[3:6][0].islower():
+        if dateOld[3:6] in self.__numbersOfMonth:
             for k, v in self.__numbersOfMonth.items():
                 if k == dateOld[3:6]:
-                    newDate = dateOld.replace(k, str(v))
+                    nD = dateOld.replace(k, str(v))
+                    if int(nD[3:5].strip()) > 9:
+                        dStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                    else:
+                        dStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
         else:
             for k, v in self.__numbersOfMonthEnglish.items():
                 if k == dateOld[3:6]:
-                    newDate = dateOld.replace(k, str(v))
-        return newDate.strip(' ')
+                    nD = dateOld.replace(k, str(v))
+                    if int(nD[3:5].strip()) > 9:
+                        dStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                    else:
+                        dStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+
+        newDate = nD.strftime('%Y/%m/%d %H:%M:%S')
+        return newDate
 
     def processedData(self, listTarget) -> None:
         for groupData in listTarget:
