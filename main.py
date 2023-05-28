@@ -159,15 +159,15 @@ class DataExtractor:
                 for date, data in groups:
                     self.__extractData.append((date, [
                         (
-                            float(values[1]),
-                            float(values[2]),
-                            float(values[3]),
-                            float(values[4])
+                            float(value[1]),
+                            float(value[2]),
+                            float(value[3]),
+                            float(value[4])
                         )
                         if
-                        values[1] and values[2] and values[3] and values[4] != ''
+                        value[1] and value[2] and value[3] and value[4] != ''
                         else (0, 0, 0, 0)
-                        for values in data
+                        for value in data
                     ]))
         except (IndexError, Exception) as e:
             raise e

@@ -27,3 +27,11 @@ create table dado_diario (
 
 select * from dado_diario;
 
+truncate table dado_diario;
+
+drop table dado_diario;
+
+show datastyle;
+
+
+
