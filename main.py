@@ -214,21 +214,21 @@ class DataProcessor:
                 if k == dateOld[3:6]:
                     nD = dateOld.replace(k, str(v))
                     if int(nD[3:5].strip()) > 9:
-                        dStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                        dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
                     else:
-                        dStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                        dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
         else:
             for k, v in self.__numbersOfMonthEnglish.items():
                 if k == dateOld[3:6]:
                     nD = dateOld.replace(k, str(v))
                     if int(nD[3:5].strip()) > 9:
-                        dStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                        dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
                     else:
-                        dStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dStr, '%Y/%m/%d %H:%M:%S')
+                        dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
 
         newDate = nD.strftime('%Y/%m/%d %H:%M:%S')
         return newDate
