@@ -315,7 +315,7 @@ class DataProcessor:
 if __name__ == '__main__':
     try:
         bDDataDaily = OperationDataBase('dado_diario')
-        r = FileRetriever('/home/fernando/csv_estacao')
+        r = FileRetriever('./arquivosModificados')
         files = r.getFoundFiles()
         for currentFile in files:
             dE = DataExtractor()
