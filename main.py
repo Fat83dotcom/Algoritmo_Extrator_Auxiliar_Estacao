@@ -23,6 +23,9 @@ class DataBase(ABC):
     def toExecute(self, sql):
         self.cursor.execute(sql)
 
+    def toExecuteMogrify(self, sql):
+        self.cursor.mogrify(sql)
+
     def toSend(self):
         self.con.commit()
 
@@ -91,8 +94,22 @@ class OperationDataBase(DataBase):
             self.Bd.toAbort()
             raise e
 
+    def insertCollumnMogrify(self, *args, collumn):
+        try:
+            sql = self.generatorSQLInsert(
+                *args, colunm_names=collumn, table_name=self.__table
+            )
+            self.Bd.toExecuteMogrify(sql)
+            self.Bd.toSend()
+        except Exception as e:
+            self.Bd.toAbort()
+            raise e
+
     def closeConnection(self):
         return self.Bd.closeConnection()
+
+    def toExecute(self, sql):
+        return self.Bd.toExecute(sql)
 
 
 class FileRetriever:
