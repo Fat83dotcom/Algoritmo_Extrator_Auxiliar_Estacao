@@ -26,7 +26,8 @@ create table dado_diario (
 );
 
 create or replace view  medias_diarias as
-select dia, media_umidade, media_pressao, media_temp_int, media_temp_ext from dado_diario;
+select dia, media_umidade, media_pressao, media_temp_int, media_temp_ext from dado_diario
+;
 
 create or replace view medias_min_max_temp as
 select 
@@ -44,16 +45,17 @@ order by dia
 
 select * from medias_min_max_temp
 where
-dia between '2023-1-1' and '2023-12-31'
+dia between '2023-5-1' and '2023-5-31'
 and minimo_temp_int <= 25
 order by dia
 
 select * from dado_diario where maximo_temp_int >= 60
 
+select * from dado_diario;
 
 truncate table dado_diario;
 
-drop table dado_diario;
+drop table dado_diario cascade;
 
 show datastyle;
 
