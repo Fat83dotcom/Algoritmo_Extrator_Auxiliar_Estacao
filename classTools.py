@@ -67,6 +67,10 @@ class OperationDataBase(DataBase):
 
     def __init__(self, table: str) -> None:
         self.__table = table
+        self.Bd: DataBase = DataBase
+
+    def setBd(self, dbChoice: int) -> None:
+        CONFIG = dbCredentials(dbChoice)
         self.Bd = DataBase(
             dbname=CONFIG['banco_dados'],
             user=CONFIG['usuario'],
