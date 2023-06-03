@@ -45,13 +45,15 @@ order by dia
 
 select * from medias_min_max_temp
 where
-dia between '2023-5-1' and '2023-5-31'
-and minimo_temp_int <= 25
+dia between '2023-5-1' and '2023-6-2'
+and minimo_temp_int <= 20
 order by dia
+
+select min(minimo_temp_int) from medias_min_max_temp
 
 select * from dado_diario where maximo_temp_int >= 60
 
-select * from dado_diario;
+select * from dado_diario where dia='2023-6-2';
 
 truncate table dado_diario;
 
