@@ -394,10 +394,14 @@ class DataProcessor:
             tempOutdoor: list = []
 
             for data in groupData[1]:
-                humidity.append(data[0])
-                press.append(data[1])
-                tempIndoor.append(data[2])
-                tempOutdoor.append(data[3])
+                if 0 < data[0] <= 100:
+                    humidity.append(data[0])
+                if 0 < data[1] <= 1000:
+                    press.append(data[1])
+                if 0 < data[2] < 50:
+                    tempIndoor.append(data[2])
+                if 0 < data[3] < 50:
+                    tempOutdoor.append(data[3])
 
             currentData.update({'date': self.__dateTransformer(groupData[0])})
             currentData.update({'umidity': {
