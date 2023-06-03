@@ -145,35 +145,73 @@ class OperationDataBase(DataBase):
 
 
 class FileRetriever:
-    def __init__(self, path) -> None:
+    '''
+        Busca arquivos, manipula caminhos e nomes de arquivos.
+    '''
+    def __init__(self, pathTarget, extension='.csv') -> None:
         self.__foundFiles: list = []
-        self.__path = path
+        self.__pathTarget = pathTarget
+        self.__extensionFile = extension
 
-    def __fileHunter(self) -> None:
-        for root, _, file_ in os.walk(self.__path):
+    def findYesterdayFile(self, month, year) -> None:
+        '''
+            Busca o arquivo cujo o mês está na data de ontem.
+            Salva o arquivo no atributo self.__foundFiles
+            Retorna -> None
+        '''
+        try:
+            fileName = self.__generatorNameFile(month, year)
+            self.__foundFiles.append(self.findOneFile(fileName))
+        except Exception as e:
+            raise (e.__name__.__class__, e)
+
+    def findFiles(self) -> None:
+        '''
+            Atributo de classe.
+            Busca todos os arquivos cujo a extensão foi definida na pasta.
+            Salva o caminho dos arquivos no atributo self.__foundFiles.
+            Retorna -> None.
+        '''
+        for root, _, file_ in os.walk(self.__pathTarget):
             for targetFile in file_:
-                if '.csv' in targetFile:
+                if self.__extensionFile in targetFile:
                     self.__foundFiles.append(os.path.join(root, targetFile))
 
-    def oneFileHunter(self, fileName: str) -> str:
-        for root, _, file_ in os.walk(self.__path):
+    def findOneFile(self, fileName: str):
+        '''
+            Busca um arquivo na pasta definida pelo seu nome.
+            Retorna o caminho do arquivo se ele existir.
+        '''
+        for root, _, file_ in os.walk(self.__pathTarget):
             for targetFile in file_:
                 if fileName in targetFile:
-                    return os.path.join(root, targetFile)
-                else:
-                    return 'Arquivo não encontrado.'
+                    return str(os.path.join(root, targetFile))
+        return 'Arquivo não encontrado.'
+
+    def __generatorNameFile(self, month, year):
+        '''
+            Atributo de classe.
+            Gera o nome de um arquivo baseado em seu mês e ano.
+            Retorna o nome do arquivo.
+        '''
+        try:
+            nameFile = os.path.join(
+                f'{month}_{year}_log{self.__extensionFile}'
+            )
+            return nameFile
+        except Exception as e:
+            print(e.__class__.__name__, e)
 
     def getFoundFiles(self):
         '''
             Retorna o atributo self.__foundFiles.
         '''
         try:
-            self.__fileHunter()
             if self.__foundFiles:
                 for files in self.__foundFiles:
                     yield files
             else:
-                raise "Lista de arquivos vazia"
+                raise Exception('Arquivos não encontrdos')
         except Exception as e:
             print(e)
 
@@ -194,15 +232,44 @@ class DataExtractor:
             pelo metodo de classe self.__groupbyDataByDate
         '''
         try:
-            def __extractKey(listTarget):
-                return listTarget[0][:11]
-
-            PATH_CSV = Path(__file__).parent / file
+            PATH_CSV = Path(__file__).parent / file  # type: ignore
             with open(PATH_CSV, 'r', encoding='utf-8') as myCsv:
                 reader = csv.reader((line.replace('\0', '') for line in myCsv))
-                groups = groupby(reader, key=__extractKey)
-                for date, data in groups:
-                    self.__extractData.append((date, [
+                self.__groupbyDataByDate(reader)
+        except (IndexError, Exception) as e:
+            raise e
+
+    def extractedDailyData(self, pathFile: str, dateTarget: int) -> list:
+        '''Informe o caminho do arquivo e a data da extração. Retorna os dados
+        retirados do arquivo'''
+        with open(pathFile, 'r', encoding='utf-8') as file:
+            dataFile = [x.replace('\0', '') for x in file.readlines()]
+            extractDataTarget: list = []
+            for data in dataFile[-1::-1]:
+                datas = data[:3].strip()
+                if datas == '':
+                    continue
+                if int(datas) > dateTarget:
+                    ...
+                elif int(datas) == dateTarget:
+                    extractDataTarget.append(
+                        data.strip().split(',')
+                    )
+                else:
+                    break
+        self.__groupbyDataByDate(extractDataTarget)
+
+    def __groupbyDataByDate(self, iterable):
+        '''
+            Agrupa os dados por data.
+            Salva os dados no atributo self.__stractData
+        '''
+        def __extractKey(listTarget):
+            return listTarget[0][:11]
+
+        groups = groupby(iterable, key=__extractKey)
+        for date, data in groups:
+            self.__extractData.append((date, [
                         (
                             float(value[1]),
                             float(value[2]),
@@ -364,4 +431,148 @@ class DataProcessor:
             self.__dataProcessed.append(currentData)
 
     def getDataProcessed(self) -> list:
+        '''
+        Retorna o atributo self.__dataProcessed
+        '''
         return self.__dataProcessed
+
+
+class ConverterMonths:
+    '''
+        Converte os números dos meses em suas abreviações.
+    '''
+    def __init__(self) -> None:
+        self.__numbersOfMonth = {
+            '01': 'jan',
+            '02': 'fev',
+            '03': 'mar',
+            '04': 'abr',
+            '05': 'mai',
+            '06': 'jun',
+            '07': 'jul',
+            '08': 'ago',
+            '09': 'set',
+            '10': 'out',
+            '11': 'nov',
+            '12': 'dez'
+        }
+        self.__numbersOfMonthEnglish = {
+            '01': 'jan',
+            '02': 'feb',
+            '03': 'mar',
+            '04': 'apr',
+            '05': 'may',
+            '06': 'jun',
+            '07': 'jul',
+            '08': 'aug',
+            '09': 'sep',
+            '10': 'oct',
+            '11': 'nov',
+            '12': 'dec'
+        }
+
+    def getMonths(self, numberOfMont: str) -> str:
+        '''
+            Informe uma string contendo o número correspondente ao mês.
+            Retorna a abreviação do mês.
+        '''
+        if numberOfMont in self.__numbersOfMonth:
+            return self.__numbersOfMonth[numberOfMont]
+
+
+class DailyDate:
+    '''Manipula datas.'''
+    def __init__(self) -> None:
+        self.__todayDate: datetime = datetime.now()
+
+    def yesterdayDate(self) -> datetime:
+        '''Retorna a data de ontem.'''
+        return self.__todayDate - timedelta(1)
+
+    def getTodayDate(self) -> datetime:
+        '''Retorna o atributo __todayDate, contendo a data atual.'''
+        return self.__todayDate
+
+    def extractDay(self, date: datetime) -> str:
+        '''Retorna o dia da data informada.'''
+        dd = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+        extratcDay = dd.strftime('%d')
+        return extratcDay
+
+    def extractMonth(self, date: datetime) -> str:
+        '''Retorna o mês da data informada.'''
+        dm = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+        extratcMonth = dm.strftime('%m')
+        return extratcMonth
+
+    def extractYear(self, date: datetime) -> str:
+        '''Retorna o ano da data informada.'''
+        dt = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+        extratcYear = dt.strftime('%Y')
+        return extratcYear
+
+
+class DataModel:
+    '''Modelo dos dados do banco'''
+    def __init__(self, dB: OperationDataBase) -> None:
+        self.DBInstance = dB
+
+    def executeDB(self, iterable: dict) -> None:
+        '''
+            Insere os dados extraidos no modelo do BD.
+            Retorna -> None
+        '''
+        for dataDays in iterable:
+            try:
+                self.DBInstance.toExecute('SET datestyle to ymd')
+                self.DBInstance.insertCollumn(
+                    (dataDays['date'],
+                        dataDays['umidity']['mean'],
+                        dataDays['umidity']['minimum'],
+                        dataDays['umidity']['maximum'],
+                        dataDays['umidity']['median'],
+                        dataDays['umidity']['mode'],
+                        dataDays['press']['mean'],
+                        dataDays['press']['minimum'],
+                        dataDays['press']['maximum'],
+                        dataDays['press']['median'],
+                        dataDays['press']['mode'],
+                        dataDays['tempIndoor']['mean'],
+                        dataDays['tempIndoor']['minimum'],
+                        dataDays['tempIndoor']['maximum'],
+                        dataDays['tempIndoor']['median'],
+                        dataDays['tempIndoor']['mode'],
+                        dataDays['tempOutdoor']['mean'],
+                        dataDays['tempOutdoor']['minimum'],
+                        dataDays['tempOutdoor']['maximum'],
+                        dataDays['tempOutdoor']['median'],
+                        dataDays['tempOutdoor']['mode']), collumn='(dia, \
+                        media_umidade, \
+                        minimo_umidade, \
+                        maximo_umidade, \
+                        mediana_umidade, \
+                        moda_umidade, \
+                        media_pressao, \
+                        minimo_pressao, \
+                        maximo_pressao, \
+                        mediana_pressao, \
+                        moda_pressao, \
+                        media_temp_int, \
+                        minimo_temp_int, \
+                        maximo_temp_int, \
+                        mediana_temp_int, \
+                        moda_temp_int, \
+                        media_temp_ext, \
+                        minimo_temp_ext, \
+                        maximo_temp_ext, \
+                        mediana_temp_ext, \
+                        moda_temp_ext\
+                    )')
+            except Exception as e:
+                print(e.__class__.__name__, e)
+                continue
+
+
+if __name__ == '__main__':
+    m = ConverterMonths()
+    print(m.getMonths('05'))
