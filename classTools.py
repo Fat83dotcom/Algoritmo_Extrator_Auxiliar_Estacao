@@ -10,6 +10,8 @@ from statistics import mean, median, mode
 
 
 class DataBase(ABC):
+    '''Classe abstrata que fornece os serviços básicos
+    para as operações do banco de dados'''
     def __init__(
             self, host='', port='', dbname='', user='', password=''
             ) -> None:
@@ -61,6 +63,7 @@ class DataBase(ABC):
 
 
 class OperationDataBase(DataBase):
+    '''Realiza as operações com o PostgreSQL'''
 
     def __init__(self, table: str) -> None:
         self.__table = table
@@ -73,6 +76,12 @@ class OperationDataBase(DataBase):
         )
 
     def updateColumn(self, collumn, condiction, update):
+        '''
+            Atualiza colunas.
+            Parametros: collumn -> Nome da coluna
+            condition -> Condição de atualização
+            update -> Valor da modificação
+        '''
         sql = self.generatorSQLUpdate(
             update, table_name=self.__table,
             collumn_name=collumn, condiction=condiction)
@@ -84,6 +93,12 @@ class OperationDataBase(DataBase):
             raise e
 
     def insertCollumn(self, *args, collumn):
+        '''
+            Insere dados na tabela.
+            Parametros:
+            *args -> tupla com os valores, em ordem com a coluna
+            collumn -> Nome das colunas, na ordem de inserção.
+        '''
         try:
             sql = self.generatorSQLInsert(
                 *args, colunm_names=collumn, table_name=self.__table
@@ -95,6 +110,12 @@ class OperationDataBase(DataBase):
             raise e
 
     def insertCollumnMogrify(self, *args, collumn):
+        '''
+            Insere dados na tabela usando o comando pysicopg2 mogrify().
+            Parametros:
+            *args -> tupla com os valores, em ordem com a coluna
+            collumn -> Nome das colunas, na ordem de inserção.
+        '''
         try:
             sql = self.generatorSQLInsert(
                 *args, colunm_names=collumn, table_name=self.__table
@@ -106,9 +127,16 @@ class OperationDataBase(DataBase):
             raise e
 
     def closeConnection(self):
+        '''
+            Fecha a conexão com o banco.
+            Deve ser usado ao final das transações.
+        '''
         return self.Bd.closeConnection()
 
     def toExecute(self, sql):
+        '''
+            Executa um comando SQL avulso.
+        '''
         return self.Bd.toExecute(sql)
 
 
@@ -131,7 +159,10 @@ class FileRetriever:
                 else:
                     return 'Arquivo não encontrado.'
 
-    def getFoundFiles(self) -> list:
+    def getFoundFiles(self):
+        '''
+            Retorna o atributo self.__foundFiles.
+        '''
         try:
             self.__fileHunter()
             if self.__foundFiles:
@@ -144,10 +175,20 @@ class FileRetriever:
 
 
 class DataExtractor:
+    '''
+        Extrai os dados brutos dos arquivos e agrupa-os por dia.
+    '''
     def __init__(self) -> None:
         self.__extractData: list = []
 
     def dataExtract(self, file: list) -> None:
+        '''
+            Extrai dados de arquivos .csv.
+            Paramtros:
+            file -> Nome do arquivo.
+            O dados são salvos no atributo self.__extractData
+            pelo metodo de classe self.__groupbyDataByDate
+        '''
         try:
             def __extractKey(listTarget):
                 return listTarget[0][:11]
@@ -169,14 +210,16 @@ class DataExtractor:
                         else (0, 0, 0, 0)
                         for value in data
                     ]))
-        except (IndexError, Exception) as e:
-            raise e
 
     def getExtractData(self) -> list:
+        '''
+        Retorna o atributo self.__extractData
+        '''
         return self.__extractData
 
 
 class DataProcessor:
+    '''Processa os dados e prapara-os para entrar no banco de dados.'''
     def __init__(self) -> None:
         self.__dataProcessed: list = []
         self.__numbersOfMonth = {
@@ -209,6 +252,10 @@ class DataProcessor:
         }
 
     def __dateTransformer(self, dateOld: str) -> str:
+        '''
+        Metodo de classe que formata datas no formato do Banco de Dados.
+        Retorna uma string com a data formatada.
+        '''
         if dateOld[3:6] in self.__numbersOfMonth:
             for k, v in self.__numbersOfMonth.items():
                 if k == dateOld[3:6]:
@@ -234,6 +281,10 @@ class DataProcessor:
         return newDate
 
     def processedData(self, listTarget) -> None:
+        '''
+        Processa a lista com os dados agrupados por data.
+        Os dados são salvos no atributo self.__dataProcessed.
+        '''
         for groupData in listTarget:
             currentData: dict = {
                 'date': '',
