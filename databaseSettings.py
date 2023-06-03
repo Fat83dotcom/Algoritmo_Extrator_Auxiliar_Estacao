@@ -1,9 +1,6 @@
 import confidentials
 
-CONFIG = {
-    'banco_dados': confidentials.bancoDados,
-    'usuario': confidentials.usuario,
-    'host': confidentials.host,
-    'porta': 5432,
-    'senha': confidentials.senha,
-}
+
+def dbCredentials(database: int) -> dict:
+    CONFIG = confidentials.bataBaseChoice(database)
+    return CONFIG
