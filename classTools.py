@@ -211,7 +211,7 @@ class FileRetriever:
                 for files in self.__foundFiles:
                     yield files
             else:
-                raise Exception('Arquivos não encontrdos')
+                raise Exception('Arquivos não encontrados')
         except Exception as e:
             print(e)
 

@@ -5,6 +5,7 @@ from main import FileRetriever
 try:
     pathFolderFiles = '/home/fernando/csv_estacao'
     r = FileRetriever(pathFolderFiles)
+    r.findFiles()
     path = r.getFoundFiles()
 
     for fileTarget in path:
