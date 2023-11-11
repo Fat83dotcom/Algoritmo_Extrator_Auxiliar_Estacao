@@ -269,18 +269,21 @@ class DataExtractor:
 
         groups = groupby(iterable, key=__extractKey)
         for date, data in groups:
-            self.__extractData.append((date, [
-                        (
-                            float(value[1]),
-                            float(value[2]),
-                            float(value[3]),
-                            float(value[4])
-                        )
-                        if
-                        value[1] and value[2] and value[3] and value[4] != ''
-                        else (0, 0, 0, 0)
-                        for value in data
-                    ]))
+            try:
+                self.__extractData.append((date, [
+                    (
+                        float(value[1]),
+                        float(value[2]),
+                        float(value[3]),
+                        float(value[4])
+                    )
+                    if
+                    value[1] and value[2] and value[3] and value[4] != ''
+                    else (0, 0, 0, 0)
+                    for value in data
+                ]))
+            except Exception as e:
+                print(e)
 
     def getExtractData(self) -> list:
         '''
@@ -327,29 +330,30 @@ class DataProcessor:
         Metodo de classe que formata datas no formato do Banco de Dados.
         Retorna uma string com a data formatada.
         '''
-        if dateOld[3:6] in self.__numbersOfMonth:
-            for k, v in self.__numbersOfMonth.items():
-                if k == dateOld[3:6]:
-                    nD = dateOld.replace(k, str(v))
-                    if int(nD[3:5].strip()) > 9:
-                        dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
-                    else:
-                        dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
-        else:
-            for k, v in self.__numbersOfMonthEnglish.items():
-                if k == dateOld[3:6]:
-                    nD = dateOld.replace(k, str(v))
-                    if int(nD[3:5].strip()) > 9:
-                        dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
-                    else:
-                        dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
-                        nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
-
-        newDate = nD.strftime('%Y/%m/%d %H:%M:%S')
-        return newDate
+        try:
+            if dateOld[3:6] in self.__numbersOfMonth:
+                for k, v in self.__numbersOfMonth.items():
+                    if k == dateOld[3:6]:
+                        nD = dateOld.replace(k, str(v))
+                        if int(nD[3:5].strip()) > 9:
+                            dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                            nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
+                        else:
+                            dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                            nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
+            else:
+                for k, v in self.__numbersOfMonthEnglish.items():
+                    if k == dateOld[3:6]:
+                        nD = dateOld.replace(k, str(v))
+                        if int(nD[3:5].strip()) > 9:
+                            dTStr = f'{nD[5:]}/{nD[3:5]}/{nD[:2]} 00:00:00'.strip()
+                            nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
+                        else:
+                            dTStr = f'{nD[5:]}/{nD[3]}/{nD[:2]} 00:00:00'.strip()
+                            nD = datetime.strptime(dTStr, '%Y/%m/%d %H:%M:%S')
+            return nD.strftime('%Y/%m/%d %H:%M:%S')
+        except Exception as e:
+            print(e)
 
     def processedData(self, listTarget) -> None:
         '''
