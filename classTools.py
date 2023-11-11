@@ -72,10 +72,10 @@ class OperationDataBase(DataBase):
     def setBd(self, dbChoice: int) -> None:
         CONFIG = dbCredentials(dbChoice)
         self.Bd = DataBase(
-            dbname=CONFIG['banco_dados'],
-            user=CONFIG['usuario'],
-            port=CONFIG['porta'],
-            password=CONFIG['senha'],
+            dbname=CONFIG['dbname'],
+            user=CONFIG['user'],
+            port=CONFIG['port'],
+            password=CONFIG['password'],
             host=CONFIG['host']
         )
 
