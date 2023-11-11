@@ -3,7 +3,7 @@ import csv
 from main import FileRetriever
 
 try:
-    pathFolderFiles = '/home/fernando/csv_estacao'
+    pathFolderFiles = '/home/fernando/Área de Trabalho/Projeto_Estacao/Algoritmo_Extrator_Auxiliar_Estacao/csv_2023'
     r = FileRetriever(pathFolderFiles)
     r.findFiles()
     path = r.getFoundFiles()
